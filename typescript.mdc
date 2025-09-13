@@ -1,0 +1,89 @@
+# TypeScript Development Rules
+
+## Type Safety & Best Practices
+
+### Strict TypeScript Configuration
+- Always use strict mode with full type checking
+- Never use `any` type - prefer `unknown` for uncertain types
+- Use proper type unions (`string | number`) instead of loose typing
+- Define explicit return types for functions, especially public APIs
+- Use `const assertions` for immutable data structures
+
+### Interface & Type Definitions
+- Prefer `interface` for object shapes that might be extended
+- Use `type` for unions, primitives, and computed types
+- Export all shared interfaces from dedicated type files
+- Use generic constraints (`<T extends BaseType>`) for reusable components
+- Define discriminated unions for complex state management
+
+### Error Handling
+- Use proper error types instead of throwing strings
+- Define custom error classes for different error categories
+- Always handle Promise rejections with proper typing
+- Use Result patterns (`Result<T, E>`) for operations that can fail
+- Avoid silent failures - make errors explicit in types
+
+### File Naming & Organization
+- Use PascalCase for component files: `ProductCard.tsx`
+- Use camelCase for utility files: `formatPrice.ts`
+- Use kebab-case for page routes: `post-ad/page.tsx`
+- Export types from `index.ts` files in type directories
+- Group related types in domain-specific folders
+
+### Import/Export Standards
+- Use named exports for components and utilities
+- Reserve default exports only for pages and main modules
+- Import types with `import type` syntax
+- Organize imports: React → Third-party → Local → Types
+- Use path aliases (`@/`) consistently throughout the project
+
+### Generic & Advanced Types
+- Use mapped types for transforming existing types
+- Leverage utility types (`Partial`, `Pick`, `Omit`, `Record`)
+- Create branded types for IDs and sensitive data
+- Use template literal types for string patterns
+- Implement proper conditional types for complex logic
+
+### Database & API Types
+- Mirror backend DTOs exactly in frontend types
+- Use branded types for entity IDs: `type UserId = string & { __brand: 'UserId' }`
+- Define separate types for request/response payloads
+- Use Zod schemas for runtime validation and type inference
+- Never assume API response structure - always validate
+
+### React-Specific TypeScript
+- Use `React.FC` sparingly - prefer explicit function declarations
+- Define proper prop interfaces for all components
+- Use `React.ComponentProps` for extending HTML element props
+- Implement proper event handler typing with generic events
+- Use `forwardRef` with proper generic typing when needed
+
+### Performance Considerations
+- Use `const` assertions to prevent unnecessary re-renders
+- Type callback functions properly to enable React optimizations
+- Avoid inline object/function definitions in render methods
+- Use proper dependency arrays in hooks with correct typing
+- Implement proper memoization with typed selectors
+
+## Code Quality Standards
+
+### Documentation
+- Document all public interfaces with JSDoc comments
+- Include examples in complex type definitions
+- Use `@deprecated` tags for outdated APIs
+- Document breaking changes and migration paths
+- Add TODO comments with ticket references for future work
+
+### Testing
+- Write types for test utilities and mocks
+- Use proper assertion types in tests
+- Create type-safe test factories for complex objects
+- Mock external dependencies with proper typing
+- Test edge cases related to type boundaries
+
+### Migration & Maintenance
+- Use `// @ts-expect-error` with explanations for temporary fixes
+- Plan migration paths when updating major types
+- Version control breaking changes to shared types
+- Maintain backward compatibility in public APIs
+- Document type evolution in CHANGELOG files
