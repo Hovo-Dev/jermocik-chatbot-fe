@@ -1,0 +1,8 @@
+{
+    "baseUrl": "http://localhost:8000",
+    "cursorKey": "nextCursor",
+    "defaultHeaders": {
+      "Authorization": "Bearer TOKEN_HERE"
+    },
+    "collection": "./postmanCollection.json"
+  }

@@ -1,0 +1,1152 @@
+{
+	"info": {
+		"_postman_id": "ac4be863-a519-44e6-87e3-5a02cc7c5671",
+		"name": "Django API Boilerplate",
+		"description": "Complete API collection for Django REST Framework boilerplate with accounts and health check endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48054487",
+		"_collection_link": "https://hovhannes-baghdasaryan-03-8239688.postman.co/workspace/Hovhannes-Baghdasaryan's-Worksp~e2536196-ab26-4f9a-8c3b-3b69a0be5c8a/collection/48054487-ac4be863-a519-44e6-87e3-5a02cc7c5671?action=share&source=collection_link&creator=48054487"
+	},
+	"item": [
+		{
+			"name": "User Profile",
+			"item": [
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "{{session_cookie}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/profile/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"profile",
+								""
+							]
+						},
+						"description": "Get current user profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{session_cookie}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\",\n    \"email\": \"updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/profile/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"profile",
+								""
+							]
+						},
+						"description": "Update current user profile information"
+					},
+					"response": []
+				}
+			],
+			"description": "User profile management endpoints"
+		},
+		{
+			"name": "Health Checks",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/health/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"health",
+								""
+							]
+						},
+						"description": "Basic health check endpoint"
+					},
+					"response": []
+				},
+				{
+					"name": "Readiness Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/health/ready",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"health",
+								"ready"
+							]
+						},
+						"description": "Readiness check for Kubernetes (checks database and cache)"
+					},
+					"response": []
+				},
+				{
+					"name": "Liveness Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/health/live",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"health",
+								"live"
+							]
+						},
+						"description": "Liveness check for Kubernetes"
+					},
+					"response": []
+				}
+			],
+			"description": "Health monitoring endpoints"
+		},
+		{
+			"name": "Chat",
+			"item": [
+				{
+					"name": "Create Conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"My New Conversation\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/conversations/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								""
+							]
+						},
+						"description": "Create a new conversation for the authenticated user"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"My New Conversation\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/chat/conversations/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"chat",
+										"conversations",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Conversation created successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"My New Conversation\",\n        \"is_archived\": false,\n        \"user\": 1,\n        \"user_id\": 1,\n        \"created_at\": \"2024-01-01T00:00:00Z\",\n        \"updated_at\": \"2024-01-01T00:00:00Z\",\n        \"last_message_at\": null,\n        \"message_count\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "List Conversations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/conversations/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								"list"
+							]
+						},
+						"description": "List all conversations for the authenticated user"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/chat/conversations/list/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"chat",
+										"conversations",
+										"list",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Conversations retrieved successfully\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"title\": \"My New Conversation\",\n            \"is_archived\": false,\n            \"user\": 1,\n            \"user_id\": 1,\n            \"created_at\": \"2024-01-01T00:00:00Z\",\n            \"updated_at\": \"2024-01-01T00:00:00Z\",\n            \"last_message_at\": null,\n            \"message_count\": 0\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Conversation Detail",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/conversations/{{conversation_id}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								"{{conversation_id}}",
+								""
+							]
+						},
+						"description": "Retrieve a specific conversation with all its messages"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/chat/conversations/1/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"chat",
+										"conversations",
+										"1",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Conversation retrieved successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"My New Conversation\",\n        \"is_archived\": false,\n        \"user\": 1,\n        \"created_at\": \"2024-01-01T00:00:00Z\",\n        \"updated_at\": \"2024-01-01T00:00:00Z\",\n        \"last_message_at\": null,\n        \"messages\": [\n            {\n                \"id\": 1,\n                \"conversation\": 1,\n                \"content\": \"Hello, this is a test message\",\n                \"message_type\": \"user\",\n                \"created_at\": \"2024-01-01T00:00:00Z\",\n                \"updated_at\": \"2024-01-01T00:00:00Z\",\n                \"short_content\": \"Hello, this is a test message\"\n            }\n        ]\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Chuvak poxel em\",\n    \"is_archived\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/conversations/{{conversation_id}}/update/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								"{{conversation_id}}",
+								"update",
+								""
+							]
+						},
+						"description": "Update conversation title or archive status"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Updated Conversation Title\",\n    \"is_archived\": true\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/chat/conversations/1/update/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"chat",
+										"conversations",
+										"1",
+										"update",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Conversation updated successfully\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Updated Conversation Title\",\n        \"is_archived\": true,\n        \"user\": 1,\n        \"user_id\": 1,\n        \"created_at\": \"2024-01-01T00:00:00Z\",\n        \"updated_at\": \"2024-01-01T00:00:00Z\",\n        \"last_message_at\": null,\n        \"message_count\": 0\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Conversation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/conversations/{{conversation_id}}/delete/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								"{{conversation_id}}",
+								"delete",
+								""
+							]
+						},
+						"description": "Delete a conversation and all its messages"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/chat/conversations/1/delete/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"chat",
+										"conversations",
+										"1",
+										"delete",
+										""
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Conversation deleted successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Conversation Messages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/conversations/{{conversation_id}}/messages/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								"{{conversation_id}}",
+								"messages",
+								""
+							]
+						},
+						"description": "Retrieve all messages for a specific conversation"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/chat/conversations/1/messages/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"chat",
+										"conversations",
+										"1",
+										"messages",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Messages retrieved successfully\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"conversation\": 1,\n            \"content\": \"Hello, this is a test message\",\n            \"message_type\": \"user\",\n            \"created_at\": \"2024-01-01T00:00:00Z\",\n            \"updated_at\": \"2024-01-01T00:00:00Z\",\n            \"short_content\": \"Hello, this is a test message\"\n        },\n        {\n            \"id\": 2,\n            \"conversation\": 1,\n            \"content\": \"This is a longer message that will be truncated in the short_content field for list views\",\n            \"message_type\": \"assistant\",\n            \"created_at\": \"2024-01-01T00:01:00Z\",\n            \"updated_at\": \"2024-01-01T00:01:00Z\",\n            \"short_content\": \"This is a longer message that will be truncated...\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Message (with AI Response)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"Hello! Can you help me understand how this chatbot works?\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/conversations/{{conversation_id}}/messages/create/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations",
+								"{{conversation_id}}",
+								"messages",
+								"create",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Chat endpoints for conversation and message management"
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"hovo-dev-user\",\n    \"email\": \"hovotest@gmail.com\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\",\n    \"password\": \"passwordtest123\",\n    \"password_confirm\": \"passwordtest123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/register/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"register",
+								""
+							]
+						},
+						"description": "Register a new user account"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\",\n    \"password\": \"testpassword123\",\n    \"password_confirm\": \"testpassword123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/auth/register/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"register",
+										""
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"User registered successfully.\",\n    \"data\": {\n        \"id\": 1,\n        \"username\": \"testuser\",\n        \"email\": \"test@example.com\",\n        \"first_name\": \"Test\",\n        \"last_name\": \"User\",\n        \"full_name\": \"Test User\",\n        \"created_at\": \"2024-01-01T00:00:00Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"",
+									"// store tokens if they exist",
+									"if (response.access) {",
+									"    pm.globals.set(\"access\", response.access);",
+									"    console.log(\"Access token saved:\", response.access);",
+									"}",
+									"",
+									"if (response.refresh) {",
+									"    pm.globals.set(\"refresh\", response.refresh);",
+									"    console.log(\"Refresh token saved:\", response.refresh);",
+									"}",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"hovotest@gmail.com\",\n    \"password\": \"passwordtest123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/login/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"login",
+								""
+							]
+						},
+						"description": "Authenticate user and create session"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"testpassword123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/auth/login/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Login successful.\",\n    \"data\": {\n        \"id\": 1,\n        \"username\": \"testuser\",\n        \"email\": \"test@example.com\",\n        \"first_name\": \"Test\",\n        \"last_name\": \"User\",\n        \"full_name\": \"Test User\",\n        \"created_at\": \"2024-01-01T00:00:00Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Logout User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/logout/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"logout",
+								""
+							]
+						},
+						"description": "Logout the current user and invalidate session"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/auth/logout/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"logout",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Logout successful.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/me/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"me",
+								""
+							]
+						},
+						"description": "Retrieve the authenticated user's profile"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/auth/profile/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"profile",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Profile retrieved successfully.\",\n    \"data\": {\n        \"id\": 1,\n        \"username\": \"testuser\",\n        \"email\": \"test@example.com\",\n        \"first_name\": \"Test\",\n        \"last_name\": \"User\",\n        \"full_name\": \"Test User\",\n        \"created_at\": \"2024-01-01T00:00:00Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"First\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/profile/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"profile",
+								""
+							]
+						},
+						"description": "Update the authenticated user's profile"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/auth/profile/",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"profile",
+										""
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Profile updated successfully.\",\n    \"data\": {\n        \"id\": 1,\n        \"username\": \"testuser\",\n        \"email\": \"test@example.com\",\n        \"first_name\": \"Updated\",\n        \"last_name\": \"Name\",\n        \"full_name\": \"Updated Name\",\n        \"created_at\": \"2024-01-01T00:00:00Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refresh\": \"{{refresh}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/accounts/refresh-token/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"accounts",
+								"refresh-token",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for user registration, login, logout, and profile management"
+		},
+		{
+			"name": "RAG",
+			"item": [
+				{
+					"name": "Ingest Document Chunks",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/rag/documents/ingest/structured/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"rag",
+								"documents",
+								"ingest",
+								"structured",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "access",
+			"value": ""
+		}
+	]
+}

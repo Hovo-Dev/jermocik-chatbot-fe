@@ -23,17 +23,51 @@ export interface Message {
   }
 }
 
+// API Response types for messages
+export interface MessageListResponse {
+  success: boolean
+  message: string
+  data: any[]
+}
+
+export interface MessageCreateResponse {
+  success: boolean
+  message: string
+  data: {
+    assistant_message?: any
+  }
+}
+
 export interface ChatState {
   messages: Message[]
   isLoading: boolean
 }
 
 export interface ChatHistoryItem {
-  id: string
+  id: number
   title: string
-  lastMessage: string
+  lastMessage?: string
   timestamp: Date
   messageCount: number
+  is_archived: boolean
+  user: number
+  user_id: number
+  created_at: string
+  updated_at: string
+  last_message_at: string | null
+}
+
+// API Response types
+export interface ConversationListResponse {
+  success: boolean
+  message: string
+  data: ChatHistoryItem[]
+}
+
+export interface ConversationCreateResponse {
+  success: boolean
+  message: string
+  data: ChatHistoryItem
 }
 
 export interface FinancialQuickAction {

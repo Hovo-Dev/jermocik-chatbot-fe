@@ -4,54 +4,130 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { ChatHistory } from './ChatHistory'
+import { AuthButtons } from '@/components/auth/AuthButtons'
 import { Button } from '@/components/ui/Button'
+import { Modal } from '@/components/ui/Modal'
 import { cn, generateId } from '@/lib/utils'
+import { useAuth } from '@/contexts/AuthContext'
+import { chatApi, ChatApiError } from '@/lib/chatApi'
 import type { Message, ChatState, ChatHistoryItem } from '@/types/chat'
 import { 
   MessageSquare, 
   TrendingUp, 
   Sparkles, 
-  RefreshCw,
   Menu,
-  X
+  X,
+  Trash2
 } from 'lucide-react'
 
 export function ChatInterface(): JSX.Element {
+  const { isAuthenticated, tokens } = useAuth()
+  
   const [chatState, setChatState] = useState<ChatState>({
     messages: [],
     isLoading: false
   })
   
-  const [chatHistory] = useState<ChatHistoryItem[]>([
-    {
-      id: '1',
-      title: 'AAPL Stock Analysis',
-      lastMessage: 'What are the latest earnings for Apple?',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-      messageCount: 8
-    },
-    {
-      id: '2',
-      title: 'Portfolio Diversification',
-      lastMessage: 'How should I diversify my tech portfolio?',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-      messageCount: 12
-    },
-    {
-      id: '3',
-      title: 'Market Sentiment Analysis',
-      lastMessage: 'Analyze current market sentiment for Q4',
-      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-      messageCount: 6
-    }
-  ])
+  const [chatHistory, setChatHistory] = useState<ChatHistoryItem[]>([])
+  const [conversationsLoading, setConversationsLoading] = useState(false)
+  const [conversationsError, setConversationsError] = useState<string | null>(null)
   
-  const [currentChatId, setCurrentChatId] = useState<string | undefined>(undefined)
+  const [currentChatId, setCurrentChatId] = useState<number | undefined>(undefined)
+  const [messagesLoading, setMessagesLoading] = useState(false)
+  const [messagesError, setMessagesError] = useState<string | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [showQuickActions, setShowQuickActions] = useState(true)
+  
+  // Delete confirmation modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [conversationToDelete, setConversationToDelete] = useState<{ id: number; title: string } | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Fetch conversations from API
+  const fetchConversations = useCallback(async (): Promise<void> => {
+    if (!isAuthenticated || !tokens?.access) {
+      return
+    }
+
+    setConversationsLoading(true)
+    setConversationsError(null)
+
+    try {
+      const conversations = await chatApi.getConversations(tokens.access)
+      setChatHistory(conversations)
+    } catch (error) {
+      console.error('Failed to fetch conversations:', error)
+      setConversationsError(
+        error instanceof ChatApiError 
+          ? error.message 
+          : 'Failed to load conversations'
+      )
+    } finally {
+      setConversationsLoading(false)
+    }
+  }, [isAuthenticated, tokens?.access])
+
+  // Create a new conversation
+  const createNewConversation = useCallback(async (title: string): Promise<number | null> => {
+    if (!isAuthenticated || !tokens?.access) {
+      return null
+    }
+
+    try {
+      const newConversation = await chatApi.createConversation(title, tokens.access)
+      setChatHistory(prev => [newConversation, ...prev])
+      return newConversation.id
+    } catch (error) {
+      console.error('Failed to create conversation:', error)
+      return null
+    }
+  }, [isAuthenticated, tokens?.access])
+
+  // Load messages for a specific conversation
+  const loadConversationMessages = useCallback(async (conversationId: number): Promise<void> => {
+    if (!isAuthenticated || !tokens?.access) {
+      return
+    }
+
+    setMessagesLoading(true)
+    setMessagesError(null)
+
+    try {
+      const messages = await chatApi.getConversationMessages(conversationId, tokens.access)
+      setChatState(prev => ({
+        ...prev,
+        messages,
+        isLoading: false
+      }))
+    } catch (error) {
+      console.error('Failed to load conversation messages:', error)
+      setMessagesError(
+        error instanceof ChatApiError 
+          ? error.message 
+          : 'Failed to load messages'
+      )
+      setChatState(prev => ({
+        ...prev,
+        messages: [],
+        isLoading: false
+      }))
+    } finally {
+      setMessagesLoading(false)
+    }
+  }, [isAuthenticated, tokens?.access])
+
+  // Load conversations when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchConversations()
+    } else {
+      setChatHistory([])
+      setCurrentChatId(undefined)
+    }
+  }, [isAuthenticated, fetchConversations])
 
   const handleNewChat = useCallback((): void => {
     setChatState({
@@ -60,17 +136,65 @@ export function ChatInterface(): JSX.Element {
     })
     setCurrentChatId(undefined)
     setShowQuickActions(true)
+    setMessagesError(null) // Clear any previous message errors
   }, [])
 
-  const handleSelectChat = useCallback((chatId: string): void => {
+  const handleSelectChat = useCallback((chatId: number): void => {
     setCurrentChatId(chatId)
-    // In a real app, you would load the messages for this chat
-    // For demo purposes, we'll just clear the current messages
-    setChatState({
-      messages: [],
-      isLoading: false
-    })
     setShowQuickActions(false)
+    // Load messages for the selected conversation
+    loadConversationMessages(chatId)
+  }, [loadConversationMessages])
+
+  // Handle delete conversation
+  const handleDeleteChat = useCallback((chatId: number): void => {
+    const conversation = chatHistory.find(chat => chat.id === chatId)
+    if (conversation) {
+      setConversationToDelete({ id: chatId, title: conversation.title })
+      setDeleteModalOpen(true)
+    }
+  }, [chatHistory])
+
+  // Confirm delete conversation
+  const confirmDeleteConversation = useCallback(async (): Promise<void> => {
+    if (!conversationToDelete || !isAuthenticated || !tokens?.access) {
+      return
+    }
+
+    setIsDeleting(true)
+
+    try {
+      // Wait for successful API response (200 status)
+      await chatApi.deleteConversation(conversationToDelete.id, tokens.access)
+      
+      // Only close modal after successful deletion (200 response)
+      setDeleteModalOpen(false)
+      setConversationToDelete(null)
+      
+      // If the deleted conversation was currently selected, clear it
+      if (currentChatId === conversationToDelete.id) {
+        setCurrentChatId(undefined)
+        setChatState({
+          messages: [],
+          isLoading: false
+        })
+        setShowQuickActions(true)
+      }
+      
+      // Refresh conversations list from API
+      await fetchConversations()
+    } catch (error) {
+      console.error('Failed to delete conversation:', error)
+      // Modal stays open on error - user can try again or cancel
+    } finally {
+      setIsDeleting(false)
+    }
+  }, [conversationToDelete, isAuthenticated, tokens?.access, currentChatId, fetchConversations])
+
+  // Cancel delete
+  const cancelDelete = useCallback((): void => {
+    setDeleteModalOpen(false)
+    setConversationToDelete(null)
   }, [])
 
 
@@ -83,6 +207,11 @@ export function ChatInterface(): JSX.Element {
   }, [chatState.messages])
 
   const handleSendMessage = async (content: string): Promise<void> => {
+    if (!isAuthenticated || !tokens?.access) {
+      console.error('User not authenticated')
+      return
+    }
+
     const userMessage: Message = {
       id: generateId(),
       role: 'user',
@@ -98,34 +227,47 @@ export function ChatInterface(): JSX.Element {
 
     setShowQuickActions(false)
 
-    // Simulate AI response
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: generateId(),
-        role: 'assistant',
-        content: `I'll analyze "${content}" using our comprehensive financial intelligence system.\n\nBased on the latest financial data and market analysis, here's what I found:\n\n• Current market conditions show moderate volatility\n• Key financial metrics indicate stable growth patterns\n• Analyst sentiment remains cautiously optimistic\n• Risk factors include market uncertainty and regulatory changes\n\nWould you like me to dive deeper into any specific aspect of this analysis?`,
-        timestamp: new Date(),
-        knowledgeSource: 'market-data',
-        metadata: {
-          confidence: 0.87,
-          sources: ['SEC 10-K Filing', 'Yahoo Finance API', 'Reuters Market Data'],
-          stockSymbols: ['AAPL', 'MSFT', 'GOOGL'],
-          financialMetrics: {
-            currentPrice: 175.43,
-            priceChange: 2.34,
-            percentChange: 1.35,
-            marketCap: 2750000000000,
-            peRatio: 28.5
-          }
+    try {
+      // If no current conversation, create a new one
+      let conversationId = currentChatId
+      if (!conversationId) {
+        const title = content.length > 50 ? content.substring(0, 50) + '...' : content
+        const newConversationId = await createNewConversation(title)
+        if (newConversationId) {
+          conversationId = newConversationId
+          setCurrentChatId(newConversationId)
+        } else {
+          throw new Error('Failed to create conversation')
         }
       }
 
+      // Create the message using the API
+      const result = await chatApi.createMessage(conversationId, content, tokens.access)
+      
+      // Add the assistant message if it was returned
+      if (result.assistantMessage) {
+        setChatState(prev => ({
+          ...prev,
+          messages: [...prev.messages, result.assistantMessage!],
+          isLoading: false
+        }))
+      } else {
+        // If no assistant message was returned, just stop loading
+        setChatState(prev => ({
+          ...prev,
+          isLoading: false
+        }))
+      }
+
+      // Refresh conversations to update message counts
+      fetchConversations()
+    } catch (error) {
+      console.error('Failed to send message:', error)
       setChatState(prev => ({
         ...prev,
-        messages: [...prev.messages, assistantMessage],
         isLoading: false
       }))
-    }, 2000)
+    }
   }
 
 
@@ -170,6 +312,10 @@ export function ChatInterface(): JSX.Element {
             history={chatHistory}
             currentChatId={currentChatId}
             onSelectChat={handleSelectChat}
+            onDeleteChat={handleDeleteChat}
+            isLoading={conversationsLoading}
+            error={conversationsError}
+            onRetry={fetchConversations}
           />
         </div>
       </div>
@@ -198,15 +344,7 @@ export function ChatInterface(): JSX.Element {
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={handleNewChat}
-              >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </div>
+            <AuthButtons />
           </div>
         </div>
 
@@ -215,7 +353,35 @@ export function ChatInterface(): JSX.Element {
           ref={chatContainerRef}
           className="flex-1 overflow-y-auto scrollbar-thin"
         >
-          {!hasMessages && showQuickActions ? (
+          {messagesLoading ? (
+            // Loading messages
+            <div className="h-full flex items-center justify-center p-8">
+              <div className="text-center space-y-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full">
+                  <TrendingUp className="h-6 w-6 text-blue-600 animate-pulse" />
+                </div>
+                <p className="text-gray-600">Loading conversation...</p>
+              </div>
+            </div>
+          ) : messagesError ? (
+            // Error loading messages
+            <div className="h-full flex items-center justify-center p-8">
+              <div className="text-center space-y-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full">
+                  <TrendingUp className="h-6 w-6 text-red-600" />
+                </div>
+                <p className="text-red-600">Failed to load messages</p>
+                <p className="text-sm text-gray-500">{messagesError}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => currentChatId && loadConversationMessages(currentChatId)}
+                >
+                  Try Again
+                </Button>
+              </div>
+            </div>
+          ) : !hasMessages && showQuickActions ? (
             // Welcome Screen
             <div className="h-full flex items-center justify-center p-8">
               <div className="max-w-2xl w-full text-center space-y-6">
@@ -271,6 +437,62 @@ export function ChatInterface(): JSX.Element {
           ref={inputRef}
         />
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={cancelDelete}
+        title="Delete Conversation"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <Trash2 className="h-5 w-5 text-red-600" />
+            </div>
+            <div>
+              <p className="text-gray-900 font-medium">
+                Are you sure you want to delete this conversation?
+              </p>
+              <p className="text-sm text-gray-600 mt-1">
+                &ldquo;{conversationToDelete?.title}&rdquo;
+              </p>
+            </div>
+          </div>
+          
+          <p className="text-sm text-gray-600">
+            This action cannot be undone. All messages in this conversation will be permanently deleted.
+          </p>
+          
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={cancelDelete}
+              disabled={isDeleting}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDeleteConversation}
+              disabled={isDeleting}
+              className="flex-1"
+            >
+              {isDeleting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

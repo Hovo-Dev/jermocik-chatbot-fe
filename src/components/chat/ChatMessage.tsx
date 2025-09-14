@@ -127,16 +127,16 @@ export function ChatMessage({ message, className }: ChatMessageProps): JSX.Eleme
     <div className={cn(
       'flex gap-4 p-4 rounded-xl transition-all duration-200',
       isUser 
-        ? 'bg-primary text-primary-foreground ml-8' 
-        : 'bg-card border mr-8',
+        ? 'bg-blue-600 text-white ml-8' 
+        : 'bg-gray-50 border border-gray-200 mr-8',
       className
     )}>
       {/* Avatar */}
       <div className={cn(
         'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center',
         isUser 
-          ? 'bg-white/20' 
-          : 'bg-primary text-primary-foreground'
+          ? 'bg-blue-700' 
+          : 'bg-gray-600 text-white'
       )}>
         {isUser ? (
           <User className="h-4 w-4" />
@@ -154,7 +154,7 @@ export function ChatMessage({ message, className }: ChatMessageProps): JSX.Eleme
               'text-sm font-medium',
               isUser ? 'text-white' : 'text-gray-900'
             )}>
-              {isUser ? 'You' : 'AI Assistant'}
+              {isUser ? 'Me' : 'AI Response'}
             </span>
             
             {/* Knowledge Source Badge */}
@@ -174,7 +174,10 @@ export function ChatMessage({ message, className }: ChatMessageProps): JSX.Eleme
             )}
           </div>
           
-          <div className="flex items-center gap-1 text-xs opacity-70">
+          <div className={cn(
+            "flex items-center gap-1 text-xs",
+            isUser ? "text-blue-100" : "text-gray-500"
+          )}>
             <Clock className="h-3 w-3" />
             {formatTimestamp(message.timestamp)}
           </div>
@@ -184,8 +187,8 @@ export function ChatMessage({ message, className }: ChatMessageProps): JSX.Eleme
         <div className={cn(
           'prose prose-sm max-w-none',
           isUser 
-            ? 'text-white prose-invert' 
-            : 'text-gray-900',
+            ? 'text-white' 
+            : 'text-gray-800',
           isLoading && 'animate-pulse'
         )}>
           {isLoading ? (
@@ -193,7 +196,10 @@ export function ChatMessage({ message, className }: ChatMessageProps): JSX.Eleme
               <div className="w-2 h-2 bg-current rounded-full animate-bounce" />
               <div className="w-2 h-2 bg-current rounded-full animate-bounce delay-100" />
               <div className="w-2 h-2 bg-current rounded-full animate-bounce delay-200" />
-              <span className="ml-2 text-sm opacity-70">Analyzing...</span>
+              <span className={cn(
+                "ml-2 text-sm",
+                isUser ? "text-blue-100" : "text-gray-500"
+              )}>Analyzing...</span>
             </div>
           ) : (
             <div className="whitespace-pre-wrap break-words">
